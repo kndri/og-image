@@ -2,7 +2,8 @@
 import { readFileSync } from 'fs';
 import marked from 'marked';
 import { sanitizeHtml } from './sanitizer';
-import { ParsedRequest } from './types';
+import { ParsedRequest } from "./types";
+import { truncate } from "./truncate";
 const twemoji = require('twemoji');
 const twOptions = { folder: 'svg', ext: '.svg' };
 const emojify = (text: string) => twemoji.parse(text, twOptions);
@@ -120,8 +121,8 @@ export function getHtml(parsedReq: ParsedRequest) {
                 ${getAvatar(images[1], widths[1], heights[1])}
             </div>
             <div class="spacer">
-            <div class="heading">${emojify(
-              md ? marked(text) : sanitizeHtml(text)
+            <div class="heading">${text && emojify(
+              md ? marked(truncate(text, 56)) : sanitizeHtml(truncate(text, 56))
             )}
             </div>
         </div>
@@ -129,7 +130,7 @@ export function getHtml(parsedReq: ParsedRequest) {
 </html>`;
 }
 
-function getAvatar(src: string, width = "auto", height = "320") {
+function getAvatar(src: string, width = "320", height = "320") {
   return `<img
         class="logo"
         alt="Avatar"
